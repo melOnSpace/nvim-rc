@@ -2,10 +2,7 @@ vim.opt.rnu = true
 vim.opt.nu = true
 vim.opt.mouse = ""
 
-vim.opt.cino="l1"
 vim.opt.path:append("**")
-
-vim.opt.splitright = true
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
@@ -21,6 +18,8 @@ vim.opt.undofile = true
 
 vim.opt.hlsearch = false
 vim.opt.incsearch = true
+
+vim.opt.splitright = true
 
 vim.opt.termguicolors = true
 

@@ -1,12 +1,12 @@
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
----@diagnostic disable-next-line: deprecated
-if not vim.loop.fs_stat(lazypath) then
+local lazypath = vim.fn.stdpath("data").."/lazy/lazy.nvim"
+
+if #vim.fn.finddir(lazypath) <= 0 then
     vim.fn.system({
         "git",
         "clone",
         "--filter=blob:none",
         "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", -- latest stable release
+        "--branch=stable",
         lazypath,
     })
 end
@@ -65,20 +65,13 @@ local plugins = {
     {
         "ziontee113/icon-picker.nvim",
         dependencies = { "stevearc/dressing.nvim" },
+        config = function()
+            require("icon-picker").setup({ disable_legacy_commands = true })
+        end,
     },
     {
         "stevearc/oil.nvim",
         dependencies = { "nvim-tree/nvim-web-devicons" },
-    },
-    {
-        "williamboman/mason.nvim",
-        config = function()
-            require("mason").setup({
-                ui = {
-                    border = "double",
-                },
-            })
-        end,
     },
     {
         "rcarriga/nvim-dap-ui",
@@ -100,51 +93,63 @@ local plugins = {
         end,
     },
     {
-        "Vonr/align.nvim",
-        branch = "v2",
+        "MeanderingProgrammer/render-markdown.nvim",
+        dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
+        config = function()
+            require("render-markdown").setup({})
+        end,
     },
-
-    "folke/neodev.nvim",
-    "Eandrju/cellular-automaton.nvim",
-    "mfussenegger/nvim-dap",
-
-    "akinsho/toggleterm.nvim",
-    "NeogitOrg/neogit",
-    "f3fora/cmp-spell",
+    {
+        "ziontee113/color-picker.nvim",
+        config = function()
+            require("color-picker").setup({
+                ["icons"] = { "█", "▓", },
+                ["border"] = "single",
+                ["background_highlight_group"] = "Normal",
+                ["border_highlight_group"] = "FloatBorder",
+                ["text_highlight_group"] = "Normal",
+            })
+        end,
+    },
+    {
+        "RaafatTurki/hex.nvim",
+        config = function()
+            require("hex").setup({})
+        end,
+    },
+    {
+        "williamboman/mason.nvim",
+        config = function()
+            require("mason").setup({ ui = { border = "single" }, })
+        end,
+    },
 
     "neovim/nvim-lspconfig",
     "hrsh7th/nvim-cmp",
-    "hrsh7th/cmp-nvim-lsp",
-    "saadparwaiz1/cmp_luasnip",
     "L3MON4D3/LuaSnip",
-    "RaafatTurki/hex.nvim",
 
-    "ziontee113/color-picker.nvim",
+    "saadparwaiz1/cmp_luasnip",
+    "hrsh7th/cmp-nvim-lsp",
+    "f3fora/cmp-spell",
 
-    {
-        dir = "/home/mel/prog/lua/dico-client-modded",
-        priority = 0,
-    },
+    "Eandrju/cellular-automaton.nvim",
+    "folke/neodev.nvim",
+    "akinsho/toggleterm.nvim",
+    "mfussenegger/nvim-dap",
 }
 
 local opts = {
-    root = vim.fn.stdpath("data") .. "/lazy",
-    dev = {
-        -- directory where you store your local plugin projects
-        path = "~/prog/nvim",
-    },
+    root = vim.fn.stdpath("data").."/lazy",
+    dev = { path = "~/prog/nvim" },
     install = {
-        -- install missing plugins on startup. This doesn't increase startup time.
         missing = true,
-        -- try to load one of these colorschemes when starting an installation during startup
         colorscheme = { "dracula" },
     },
     ui = {
         border = "double",
-        title = "Lazy Package Manager", ---@type string only works when border is not "none"
-        title_pos = "center", ---@type "center" | "left" | "right"
-        -- Show pills on top of the Lazy window
-        pills = true, ---@type boolean
+        title = "Lazy Package Manager",
+        title_pos = "center",
+        pills = true,
         icons = {
             cmd = " ",
             config = "",
@@ -168,56 +173,38 @@ local opts = {
                 "‒",
             },
         },
-
-        browser = nil, ---@type string?
-        throttle = 20, -- how frequently should the ui process render events
-        custom_keys = {
-            ["<localleader>l"] = function(plugin)
-                require("lazy.util").float_term({ "lazygit", "log" }, {
-                    cwd = plugin.dir,
-                })
-            end,
-
-            -- open a terminal for the plugin dir
-            ["<localleader>t"] = function(plugin)
-                require("lazy.util").float_term(nil, {
-                    cwd = plugin.dir,
-                })
-            end,
-        },
+        browser = "librewolf",
+        throttle = 20,
+        custom_keys = { },
     },
     checker = {
-        -- automatically check for plugin updates
-        enabled = false,
-        concurrency = nil, ---@type number? set to 1 to check for updates very slowly
-        notify = true, -- get a notification when new updates are found
-        frequency = 3600, -- check for updates every hour
+        enabled = false,   -- automatically check for plugin updates
+        concurrency = nil, -- set to 1 to check for updates very slowly
+        notify = true,     -- get a notification when new updates are found
+        frequency = 3600,  -- check for updates every n seconds
     },
     change_detection = {
-        -- automatically check for config file changes and reload the ui
-        enabled = true,
-        notify = true, -- get a notification when changes are found
+        enabled = true, -- automatically check for config file changes and reload the ui
+        notify = true,  -- get a notification when changes are found
     },
     performance = {
-        cache = {
-            enabled = true,
-        },
+        cache = { enabled = true },
         reset_packpath = true, -- reset the package path to improve startup time
         rtp = {
             reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
             ---@type string[]
             paths = {}, -- add any custom paths here that you want to includes in the rtp
             ---@type string[] list any plugins you want to disable here
-            -- disabled_plugins = {
+            disabled_plugins = {
             --     "gzip",
             --     "matchit",
             --     "matchparen",
             --     "netrwPlugin",
             --     "tarPlugin",
             --     "tohtml",
-            --     "tutor",
+                "tutor",
             --     "zipPlugin",
-            -- },
+            },
         },
     },
 }

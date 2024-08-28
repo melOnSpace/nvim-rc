@@ -3,13 +3,22 @@ local M = {}
 M.HOMEDIR = vim.fn.expand("$HOME")
 M.WILDCARD = "@"
 
-M.directory_wildcards = {
-    ["~"] = M.HOMEDIR,
-    ["p"] = M.HOMEDIR.."/prog",
-    ["g"] = M.HOMEDIR.."/git",
-    ["c"] = M.HOMEDIR.."/.config/nvim",
-    ["d"] = M.HOMEDIR.."/.local/share/nvim",
+M.wildcard_dirs = {
+    ["c"] = vim.fn.stdpath("config"),
+    ["d"] = vim.fn.stdpath("data"),
+    ["s"] = vim.fn.stdpath("state"),
 }
+
+if vim.fn.has("linux") then
+    M.wildcard_dirs["~"] = M.HOMEDIR
+    M.wildcard_dirs["p"] = M.HOMEDIR.."/prog"
+    M.wildcard_dirs["g"] = M.HOMEDIR.."/git"
+elseif vim.fn.has("win32") then
+    M.wildcard_dirs["~"] = M.HOMEDIR
+    M.wildcard_dirs["p"] = M.HOMEDIR.."C:\\prog"
+    M.wildcard_dirs["g"] = M.HOMEDIR.."C:\\git"
+end
+
 
 ---@param prompt string
 ---@return string|nil
@@ -19,7 +28,7 @@ function M.query_directory(prompt)
 
     if input == "@h" or string.lower(input) == "help" then
         local help = "Wildcards for "..prompt.."\n\n"
-        for key, value in pairs(M.directory_wildcards) do
+        for key, value in pairs(M.wildcard_dirs) do
             help = help.."@"..tostring(key).." -> "..value.."\n"
         end
 
@@ -33,7 +42,7 @@ function M.query_directory(prompt)
         local curr = input:sub(i, i)
 
         if prev == "@" then
-            local dir = M.directory_wildcards[curr]
+            local dir = M.wildcard_dirs[curr]
             if dir == nil then goto continue end
             full_directory = full_directory:sub(1, #full_directory - 1)
             full_directory = full_directory..dir
