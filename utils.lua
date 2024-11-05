@@ -8,15 +8,16 @@ M.wildcard_dirs = {
     ["d"] = vim.fn.stdpath("data"),
     ["s"] = vim.fn.stdpath("state"),
 }
-
 if vim.fn.has("linux") then
     M.wildcard_dirs["~"] = M.HOMEDIR
     M.wildcard_dirs["p"] = M.HOMEDIR.."/prog"
     M.wildcard_dirs["g"] = M.HOMEDIR.."/git"
+    M.wildcard_dirs["o"] = M.HOMEDIR.."/git/Odin/"
 elseif vim.fn.has("win32") then
     M.wildcard_dirs["~"] = M.HOMEDIR
     M.wildcard_dirs["p"] = M.HOMEDIR.."C:\\prog"
     M.wildcard_dirs["g"] = M.HOMEDIR.."C:\\git"
+    -- M.wildcard_dirs["o"] = M.HOMEDIR
 end
 
 

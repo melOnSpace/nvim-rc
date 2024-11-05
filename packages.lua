@@ -1,5 +1,7 @@
 local lazypath = vim.fn.stdpath("data").."/lazy/lazy.nvim"
 
+local utils = require("utils")
+
 if #vim.fn.finddir(lazypath) <= 0 then
     vim.fn.system({
         "git",
@@ -13,6 +15,16 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
+local fanfic_plugin
+
+if vim.fn.has("linux") then
+    fanfic_plugin = { dir = utils.HOMEDIR.."/prog/nvim/nvim-fanfic", dependencies = "nvim-telescope/telescope.nvim" }
+elseif vim.fn.has("win32") then
+    fanfic_plugin = { dir = "C:\\prog\\nvim\\nvim-fanfic", dependencies = "nvim-telescope/telescope.nvim" }
+else
+    error("Unconfigured OS"); return
+end
+
 local plugins = {
     {
         "Mofiqul/dracula.nvim",
@@ -21,25 +33,30 @@ local plugins = {
         config = function()
             require("dracula").setup({
                 colors = {
-                    bg           = "#282A36", fg             = "#F8F8F2",
-                    selection    = "#44475A", comment        = "#8590c2",
-                    red          = "#FF5555", orange         = "#FFB86C",
-                    yellow       = "#F1FA8C", green          = "#50fa7b",
-                    purple       = "#BD93F9", cyan           = "#8BE9FD",
-                    pink         = "#FF79C6", bright_red     = "#FF6E6E",
-                    bright_green = "#69FF94", bright_yellow  = "#FFFFA5",
-                    bright_blue  = "#D6ACFF", bright_magenta = "#FF92DF",
-                    bright_cyan  = "#A4FFFF", bright_white   = "#FFFFFF",
-                    menu         = "#21222C", visual         = "#3E4452",
-                    gutter_fg    = "#4B5263", nontext        = "#3B4048",
-                    white        = "#ABB2BF", black          = "#191A21",
+                    -- bg        = "#282A36", fg      = "#F8F8F2",
+                    -- selection = "#44475A", 
+                    -- menu      = "#21222C", visual  = "#3E4452",
+                    -- gutter_fg = "#4B5263", nontext = "#3B4048",
+                    --
+                    -- black   = "#191A21", bright_black   = "#808080",
+                    -- red     = "#ff5555", bright_red     = "#fe8d8c",
+                    -- green   = "#50fa7b", bright_green   = "#50fa7b",
+                    -- yellow  = "#e6fd25", bright_yellow  = "#FFFFA5",
+                    -- blue    = "#5f5fff", bright_blue    = "#e5e5ff",
+                    -- magenta = "#cc00ff", bright_magenta = "#fe78ff",
+                    -- cyan    = "#00d2ff", bright_cyan    = "#37ffff",
+                    -- white   = "#d0d0d0", bright_white   = "#FFFFFF",
+                    --
+                    -- purple  = "#BD93F9", orange = "#FFB86C",
+                    -- pink    = "#FF79C6", violet = "#fc00ff",
                 },
                 show_end_of_buffer = true,
                 transparent_bg = true,
                 overrides = {
                     NormalFloat     = { bg = nil },
                     TelescopeNormal = { bg = nil },
-                    SpecialKey      = { bg = nil, fg="#ff92df" },
+                    SpecialKey      = { bg = nil, fg = "#ff92df" },
+                    Comment         = { bg = nil, fg = "#8590c2" },
                 },
             })
 
@@ -89,7 +106,9 @@ local plugins = {
     {
         "norcalli/nvim-colorizer.lua",
         config = function()
-            require("colorizer").setup()
+            require("colorizer").setup({
+                "!fanfic",
+            })
         end,
     },
     {
@@ -117,25 +136,27 @@ local plugins = {
             require("hex").setup({})
         end,
     },
-    {
-        "williamboman/mason.nvim",
-        config = function()
-            require("mason").setup({ ui = { border = "single" }, })
-        end,
-    },
-
-    "neovim/nvim-lspconfig",
+    -- {
+    --     "williamboman/mason.nvim",
+    --     config = function()
+    --         require("mason").setup({ ui = { border = "single" }, })
+    --     end,
+    -- },
+    -- "neovim/nvim-lspconfig",
     "hrsh7th/nvim-cmp",
-    "L3MON4D3/LuaSnip",
+    -- "L3MON4D3/LuaSnip",
 
-    "saadparwaiz1/cmp_luasnip",
+    -- "saadparwaiz1/cmp_luasnip",
+    "ray-x/cmp-treesitter",
     "hrsh7th/cmp-nvim-lsp",
     "f3fora/cmp-spell",
 
     "Eandrju/cellular-automaton.nvim",
-    "folke/neodev.nvim",
+    -- "folke/neodev.nvim",
     "akinsho/toggleterm.nvim",
     "mfussenegger/nvim-dap",
+
+    fanfic_plugin,
 }
 
 local opts = {

@@ -12,6 +12,7 @@ vim.fn.sign_define("DiagnosticSignInfo", { text="ℹ", texthl="DiagnosticSignInf
 FileTypeSymbols = {
     ["oil"] = "",
     ["toggleterm"] = "",
+    ["gitcommit"] = "󰊢",
 }
 
 function StatusLine_FileSymbol()
@@ -88,15 +89,20 @@ function StatusLine_Diagnostic()
     return result.."%#StatusFile#"
 end
 
+function StatusLine_Spell()
+    if vim.o.spell then return vim.o.spelllang
+    else return "" end
+end
+
 function StatusLine_Lsp()
     local current = vim.api.nvim_get_current_buf()
-    local servers = vim.lsp.get_active_clients({ bufnr=current })
+    local servers = vim.lsp.get_clients({ bufnr=current })
 
     if #servers == 0 then return "" end
     if #servers == 1 then return " "..servers[1].name end
 
     local result = " {"
-    for i = 1, #serversd, 1 do
+    for i = 1, #servers, 1 do
         local tail = ","
         if i == #servers then tail = "" end
         result = result..servers[i].name..tail
@@ -112,4 +118,4 @@ vim.api.nvim_set_hl(0, "StatusDiaInfo",  { fg="#5a7dff", bg="#004b4b" })
 local cursor_line = vim.api.nvim_get_hl(0, { name="CursorLine" })
 vim.api.nvim_set_hl(0, "CursorColumn", { fg=nil, bg=cursor_line.bg })
 
-vim.opt.statusline = "%#StatusFile# %{luaeval('StatusLine_FileSymbol()')}  %{luaeval('StatusLine_FileName()')}%m%h%r      b%n %c:%p%%%=%{%luaeval('StatusLine_Diagnostic()')%}    %{luaeval('StatusLine_Lsp()')}    %{luaeval('StatusLine_FileSize()')} "
+vim.opt.statusline = "%#StatusFile# %{luaeval('StatusLine_FileSymbol()')} %{luaeval('StatusLine_FileName()')}%m%h%r      b%n %c:%p%%%=%{%luaeval('StatusLine_Diagnostic()')%}    %{luaeval('StatusLine_Spell()')}    %{luaeval('StatusLine_Lsp()')}    %{luaeval('StatusLine_FileSize()')} "

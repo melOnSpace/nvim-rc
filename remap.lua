@@ -6,6 +6,8 @@ vim.keymap.set("n", "<leader>;", "q:", { noremap = true, desc = "Opens command m
 vim.keymap.set("n", "{", ":keepj norm! {<cr>", { noremap=true, silent = true, desc = "Goto end of paragraph but keep jumps" })
 vim.keymap.set("n", "}", ":keepj norm! }<cr>", { noremap=true, silent = true, desc = "goto start of paragraph but keep jumps" })
 
+-- vim.keymap.set("x", ":", ":<C-f>as/", { noremap=true, silent=true, desc="better :s" })
+
 vim.keymap.set("v", "J", ":m '>+1<cr>gv=gv", { desc = "Moves the line down one in visual mode" })
 vim.keymap.set("v", "K", ":m '<-2<cr>gv=gv", { desc = "Moves the line up one in visual mode" })
 vim.keymap.set("n", "J", "mzJ`z", { desc = "Bring next line up to the current line" })
@@ -44,7 +46,12 @@ end, { desc = "Toggle visible whitespace characters" })
 
 vim.keymap.set("n", "<leader>s", function()
     vim.cmd([[:set invspell]])
-    if vim.o.spell then P("Spelling Enabled for language \""..(vim.o.spelllang or "nil".."\""))
+    if vim.o.spell then P("Spelling Enabled for language \""..((vim.o.spelllang or "nil").."\""))
+    else P("Spelling Disabled") end
+end, { desc = "Toggle spelling" })
+vim.keymap.set("i", "<C-s>", function()
+    vim.cmd([[:set invspell]])
+    if vim.o.spell then P("Spelling Enabled for language \""..((vim.o.spelllang or "nil").."\""))
     else P("Spelling Disabled") end
 end, { desc = "Toggle spelling" })
 

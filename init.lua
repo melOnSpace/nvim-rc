@@ -11,6 +11,28 @@ require("status-line")
 
 local utils = require("utils")
 
+-------------------
+-- Fanfic Config --
+-------------------
+
+require("nvim-fanfic").setup({})
+
+-----------------------
+-- File Types Config --
+-----------------------
+
+vim.filetype.add({ extension = { glsl = "glsl" } })
+vim.filetype.add({ extension = { vert = "glsl" } })
+vim.filetype.add({ extension = { tesc = "glsl" } })
+vim.filetype.add({ extension = { tese = "glsl" } })
+vim.filetype.add({ extension = { geom = "glsl" } })
+vim.filetype.add({ extension = { frag = "glsl" } })
+vim.filetype.add({ extension = { comp = "glsl" } })
+vim.filetype.add({ extension = { comp = "glsl" } })
+
+vim.filetype.add({ extension = { fanfic = "fanfic" } })
+vim.filetype.add({ extension = { ff     = "fanfic" } })
+
 ----------------------
 -- Telescope Config --
 ----------------------
@@ -24,9 +46,9 @@ vim.api.nvim_create_autocmd("User", {
     end,
 })
 
----@param boolean no
----@param boolean si
----@param string|nil ds
+---@param no boolean
+---@param si boolean
+---@param ds string|nil
 local function nore(no, si, ds) return { noremap=no, silent=si, desc=ds } end
 
 local ts_builtin = require("telescope.builtin")
@@ -164,15 +186,6 @@ end
 -- Treesitter Config --
 -----------------------
 
-vim.filetype.add({ extension = { glsl = "glsl" } })
-vim.filetype.add({ extension = { vert = "glsl" } })
-vim.filetype.add({ extension = { tesc = "glsl" } })
-vim.filetype.add({ extension = { tese = "glsl" } })
-vim.filetype.add({ extension = { geom = "glsl" } })
-vim.filetype.add({ extension = { frag = "glsl" } })
-vim.filetype.add({ extension = { comp = "glsl" } })
-vim.filetype.add({ extension = { comp = "glsl" } })
-
 require("nvim-treesitter.configs").setup({
     ensure_installed = { "c", "lua", "vim", "vimdoc", "odin", "glsl", "python" },
     sync_install = false,
@@ -220,7 +233,6 @@ toggleterm.setup({
 ----------------
 
 local dap = require("dap")
-local dapw = require("dap.ui.widgets")
 
 dap.adapters.codelldb = {
     type = "server",
@@ -348,17 +360,18 @@ vim.fn.sign_define("DapStopped", {text="⇥", texthl="DapStopped", linehl="", nu
 -----------------------
 
 vim.api.nvim_set_hl(0, "Pmenu", { fg = "#C5CDD9", bg = "NONE" })
-local luasnip = require("luasnip")
+-- local luasnip = require("luasnip")
 local cmp = require("cmp")
 cmp.setup({
     snippet = {
-        expand = function(args)
-            luasnip.lsp_expand(args.body)
-        end,
+        -- expand = function(args)
+        --     luasnip.lsp_expand(args.body)
+        -- end,
     },
     sources = cmp.config.sources({
-        { name = "nvim_lsp" },
-        { name = "luasnip" },
+        -- { name = "nvim_lsp" },
+        -- { name = "luasnip" },
+        { name = "treesitter" },
         {
             name = "spell",
             keep_all_entries = false,
@@ -383,69 +396,70 @@ cmp.setup({
     }),
 })
 
--------------------------------------
--- Language Server Protocol Config --
--------------------------------------
+-------------------------------------------
+-- Language Server Protocol Config (LSP) --
+-------------------------------------------
 
-local lspconfig = require("lspconfig")
-require("lspconfig.ui.windows").default_options.border = "single"
-
-lspconfig.zls.setup({})
-lspconfig.ols.setup({})
-lspconfig.clangd.setup({ })
-lspconfig.jsonls.setup({})
-lspconfig.bashls.setup({})
-lspconfig.tsserver.setup({})
-lspconfig.nim_langserver.setup({})
+-- local lspconfig = require("lspconfig")
+-- require("lspconfig.ui.windows").default_options.border = "single"
+--
+-- lspconfig.vimls.setup({})
+-- lspconfig.zls.setup({})
+-- lspconfig.ols.setup({})
+-- lspconfig.clangd.setup({ })
+-- lspconfig.jsonls.setup({})
+-- lspconfig.bashls.setup({})
+-- lspconfig.tsserver.setup({})
+-- lspconfig.nim_langserver.setup({})
 -- lsp.java_language_server.setup({})
-lspconfig.jedi_language_server.setup({})
-lspconfig.cmake.setup({})
-lspconfig.html.setup({})
-lspconfig.asm_lsp.setup({})
-lspconfig.rust_analyzer.setup({})
-lspconfig.cssls.setup({})
-lspconfig.lua_ls.setup({
-    on_init = function(client)
-        client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
-            runtime = { version = "LuaJIT" },
-            workspace = {
-                checkThirdParty = false,
-                library = {
-                    vim.env.VIMRUNTIME,
-                    "${3rd}/luv/library"
-                }
-            }
-        })
-    end,
-    settings = { Lua = {} }
-})
-
-vim.api.nvim_create_autocmd("LspAttach", {
-    group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-    callback = function(ev)
-        vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-
-        vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = ev.buf,                 desc = "LSP: Goto Declaration" })
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = ev.buf,                  desc = "LSP: Goto Definition" })
-        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = ev.buf,              desc = "LSP: Goto Implementation" })
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = ev.buf,                        desc = "LSP: Hover" })
-        vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, { buffer = ev.buf,      desc = "LSP: Get type definition" })
-        vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, { buffer = ev.buf,               desc = "LSP: Rename Symbol" })
-        vim.keymap.set({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action, { buffer = ev.buf, desc = "LSP: Attempt Code Action" })
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = ev.buf,                  desc = "LSP: Open symbol references" })
-        vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, { buffer = ev.buf,           desc = "LSP: Signature Help" })
-    end,
-})
-
-local border = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' }
-
-local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
----@diagnostic disable-next-line: duplicate-set-field, redefined-local
-function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-  opts = opts or {}
-  opts.border = opts.border or border
-  return orig_util_open_floating_preview(contents, syntax, opts, ...)
-end
+-- lspconfig.jedi_language_server.setup({})
+-- lspconfig.cmake.setup({})
+-- lspconfig.html.setup({})
+-- lspconfig.asm_lsp.setup({})
+-- lspconfig.rust_analyzer.setup({})
+-- lspconfig.cssls.setup({})
+-- lspconfig.lua_ls.setup({
+--     on_init = function(client)
+--         client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+--             runtime = { version = "LuaJIT" },
+--             workspace = {
+--                 checkThirdParty = false,
+--                 library = {
+--                     vim.env.VIMRUNTIME,
+--                     "${3rd}/luv/library"
+--                 }
+--             }
+--         })
+--     end,
+--     settings = { Lua = {} }
+-- })
+--
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+--     callback = function(ev)
+--         vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+--
+--         vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = ev.buf,                 desc = "LSP: Goto Declaration" })
+--         vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = ev.buf,                  desc = "LSP: Goto Definition" })
+--         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { buffer = ev.buf,              desc = "LSP: Goto Implementation" })
+--         vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = ev.buf,                        desc = "LSP: Hover" })
+--         vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, { buffer = ev.buf,      desc = "LSP: Get type definition" })
+--         vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, { buffer = ev.buf,               desc = "LSP: Rename Symbol" })
+--         vim.keymap.set({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action, { buffer = ev.buf, desc = "LSP: Attempt Code Action" })
+--         vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = ev.buf,                  desc = "LSP: Open symbol references" })
+--         vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, { buffer = ev.buf,           desc = "LSP: Signature Help" })
+--     end,
+-- })
+--
+-- local border = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' }
+--
+-- local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+-- ---@diagnostic disable-next-line: duplicate-set-field, redefined-local
+-- function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+--   opts = opts or {}
+--   opts.border = opts.border or border
+--   return orig_util_open_floating_preview(contents, syntax, opts, ...)
+-- end
 
 --------------------
 -- Plugin Keymaps --
@@ -479,12 +493,12 @@ vim.keymap.set("n", "<leader>c", "<cmd>PickColor<cr>", nore(true, true, "Select 
 vim.keymap.set("i", "<M-i>", "<cmd>IconPickerInsert<cr>", nore(true, true, "Open icon picker in insert mode"))
 vim.keymap.set("n", "<M-i>", "<cmd>IconPickerNormal<cr>", nore(true, true, "Open icon picker in normal mode"))
 
-vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, nore("Open Harpoon UI"))
-vim.keymap.set("n", "<leader>m", function() harpoon:list():add() end, nore("Add current buffer to Harpoon list"))
-vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end, nore("Open Harpoon buffer #0"))
-vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end, nore("Open Harpoon buffer #1"))
-vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end, nore("Open Harpoon buffer #2"))
-vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end, nore("Open Harpoon buffer #3"))
+vim.keymap.set("n", "<M-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, nore(true, true, "Open Harpoon UI"))
+vim.keymap.set("n", "<leader>m", function() harpoon:list():add() end, nore(true, true, "Add current buffer to Harpoon list"))
+vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end, nore(true, true, "Open Harpoon buffer #0"))
+vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end, nore(true, true, "Open Harpoon buffer #1"))
+vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end, nore(true, true, "Open Harpoon buffer #2"))
+vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end, nore(true, true, "Open Harpoon buffer #3"))
 
 vim.keymap.set("n", "<leader>go", dapui.toggle, { desc = "Toggle Debugger UI" })
 vim.keymap.set("n", "<leader>gl", dap.run_last, { desc = "Run previous Debugger" })
