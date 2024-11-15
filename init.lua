@@ -187,7 +187,7 @@ end
 -----------------------
 
 require("nvim-treesitter.configs").setup({
-    ensure_installed = { "c", "lua", "vim", "vimdoc", "odin", "glsl", "python" },
+    ensure_installed = { "c", "lua", "vim", "vimdoc", "glsl", "python" },
     sync_install = false,
     auto_install = false,
     highlight = {
@@ -196,6 +196,8 @@ require("nvim-treesitter.configs").setup({
     },
     indent = { enable = true, },
 })
+
+vim.treesitter.language.add("odin", { path = "/home/mel/git/tree-sitter-odin/libtree-sitter-odin.so" })
 
 ---------------------
 -- Harpoon Config --
@@ -493,7 +495,7 @@ vim.keymap.set("n", "<leader>c", "<cmd>PickColor<cr>", nore(true, true, "Select 
 vim.keymap.set("i", "<M-i>", "<cmd>IconPickerInsert<cr>", nore(true, true, "Open icon picker in insert mode"))
 vim.keymap.set("n", "<M-i>", "<cmd>IconPickerNormal<cr>", nore(true, true, "Open icon picker in normal mode"))
 
-vim.keymap.set("n", "<M-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, nore(true, true, "Open Harpoon UI"))
+vim.keymap.set("n", "<leader>h", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, nore(true, true, "Open Harpoon UI"))
 vim.keymap.set("n", "<leader>m", function() harpoon:list():add() end, nore(true, true, "Add current buffer to Harpoon list"))
 vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end, nore(true, true, "Open Harpoon buffer #0"))
 vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end, nore(true, true, "Open Harpoon buffer #1"))
