@@ -201,8 +201,11 @@ require("nvim-treesitter.configs").setup({
     indent = { enable = true, },
 })
 
+<<<<<<< HEAD
 -- vim.treesitter.language.add("odin", { path = "/home/mel/git/tree-sitter-odin/libtree-sitter-odin.so" })
 
+=======
+>>>>>>> refs/remotes/origin/main
 ---------------------
 -- Harpoon Config --
 ---------------------
