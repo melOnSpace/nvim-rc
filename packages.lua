@@ -17,12 +17,17 @@ vim.opt.rtp:prepend(lazypath)
 
 local fanfic_plugin
 
-if vim.fn.has("linux") then
+-- if vim.fn.has("linux") ~= 0 then
+-- elseif vim.fn.has("win32") ~= 0 then
+-- else then error("unsupported os") end
+
+
+if vim.fn.has("linux") ~= 0 then
     fanfic_plugin = { dir = utils.HOMEDIR.."/prog/nvim/nvim-fanfic", dependencies = "nvim-telescope/telescope.nvim" }
-elseif vim.fn.has("win32") then
+elseif vim.fn.has("win32") ~= 0 then
     fanfic_plugin = { dir = "C:\\prog\\nvim\\nvim-fanfic", dependencies = "nvim-telescope/telescope.nvim" }
 else
-    error("Unconfigured OS"); return
+    error("unsupported os"); return
 end
 
 local plugins = {
@@ -155,9 +160,11 @@ local plugins = {
     -- "folke/neodev.nvim",
     "akinsho/toggleterm.nvim",
     "mfussenegger/nvim-dap",
-
-    fanfic_plugin,
 }
+
+if vim.fn.has("linux") then
+    table.insert(plugins, fanfic_plugin)
+end
 
 local opts = {
     root = vim.fn.stdpath("data").."/lazy",

@@ -15,7 +15,11 @@ local utils = require("utils")
 -- Fanfic Config --
 -------------------
 
-require("nvim-fanfic").setup({})
+if vim.fn.has("linux") ~= 0 then
+    require("nvim-fanfic").setup({})
+elseif vim.fn.has("win32") ~= 0 then
+    -- require("nvim-fanfic").setup({})
+else error("unsupported os") end
 
 -----------------------
 -- File Types Config --
@@ -197,8 +201,11 @@ require("nvim-treesitter.configs").setup({
     indent = { enable = true, },
 })
 
+<<<<<<< HEAD
 -- vim.treesitter.language.add("odin", { path = "/home/mel/git/tree-sitter-odin/libtree-sitter-odin.so" })
 
+=======
+>>>>>>> refs/remotes/origin/main
 ---------------------
 -- Harpoon Config --
 ---------------------
