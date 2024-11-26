@@ -15,8 +15,8 @@ if vim.fn.has("linux") ~= 0 then
     M.wildcard_dirs["o"] = M.HOMEDIR.."/git/Odin/"
 elseif vim.fn.has("win32") ~= 0 then
     M.wildcard_dirs["~"] = M.HOMEDIR
-    M.wildcard_dirs["p"] = M.HOMEDIR.."C:\\prog"
-    M.wildcard_dirs["g"] = M.HOMEDIR.."C:\\git"
+    M.wildcard_dirs["p"] = M.HOMEDIR.."D:"
+    M.wildcard_dirs["g"] = M.HOMEDIR.."C:"
     -- M.wildcard_dirs["o"] = M.HOMEDIR
 end
 
@@ -57,16 +57,17 @@ function M.query_directory(prompt)
     return full_directory
 end
 
----@param dir string
+---@param file string
 ---@return boolean
-function M.exists(dir)
-    local thing = io.open(dir, "r")
-    if thing ~= nil then
-        io.close(thing)
-        return true
-    else
-        return false
-    end
+function M.exists(file)
+   local ok, err, code = os.rename(file, file)
+   if not ok then
+      if code == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
 end
 
 return M

@@ -89,7 +89,7 @@ local function srep_user()
     local dir = utils.query_directory("Live Grep>")
     if not dir then return end
     if not utils.exists(dir) then
-        vim.notify("Live Grep Error: Could not open Directory \""..dir.."\"")
+        vim.notify("Live Grep Error: Could not find Directory \""..dir.."\"")
         return
     end
     ts_builtin.live_grep({ cwd = dir })
@@ -211,6 +211,22 @@ harpoon:setup()
 -----------------------
 -- Toggleterm Config --
 -----------------------
+
+if vim.fn.has("win32") or vim.fn.has("win64") then
+    local powershell_options = {
+      shell = vim.fn.executable "pwsh" == 1 and "pwsh" or "powershell",
+      shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
+      shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
+      shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
+      shellquote = "",
+      shellxquote = "",
+    }
+    local launch_dev = " -Command '& C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Launch-VsDevShell.ps1;'"
+    powershell_options.shellcmdflag = powershell_options.shellcmdflag..launch_dev
+    for option, value in pairs(powershell_options) do
+      vim.opt[option] = value
+    end
+end
 
 local toggleterm = require("toggleterm")
 toggleterm.setup({
