@@ -2,7 +2,7 @@ vim.g.mapleader = " "
 
 vim.keymap.set("t", "<ESC>", "<cmd>stopinsert<cr>", { noremap=true, silent=true, desc="Exit insert mode while in a terminal" })
 vim.keymap.set("i", "<Tab>", "<Tab>", { desc = "Set <Tab> to itself (by default it is an alias for <C-i>" })
-vim.keymap.set("n", "<leader>;", "q:", { noremap = true, desc = "Opens command mode in a buffer" })
+vim.keymap.set("n", "<M-;>", "q:", { noremap = true, desc = "Opens command mode in a buffer" })
 vim.keymap.set("n", "{", ":keepj norm! {<cr>", { noremap=true, silent = true, desc = "Goto end of paragraph but keep jumps" })
 vim.keymap.set("n", "}", ":keepj norm! }<cr>", { noremap=true, silent = true, desc = "goto start of paragraph but keep jumps" })
 

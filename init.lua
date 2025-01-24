@@ -25,6 +25,7 @@ else error("unsupported os") end
 -- File Types Config --
 -----------------------
 
+vim.g.c_syntax_for_h = true
 vim.filetype.add({ extension = { glsl = "glsl" } })
 vim.filetype.add({ extension = { vert = "glsl" } })
 vim.filetype.add({ extension = { tesc = "glsl" } })
@@ -214,7 +215,7 @@ harpoon:setup()
 -- Toggleterm Config --
 -----------------------
 
-if vim.fn.has("win32") or vim.fn.has("win64") then
+if (vim.fn.has("win32") ~= 0) or (vim.fn.has("win64") ~= 0) then
     local powershell_options = {
       shell = vim.fn.executable "pwsh" == 1 and "pwsh" or "powershell",
       shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command \"[Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
@@ -256,76 +257,103 @@ toggleterm.setup({
 
 local dap = require("dap")
 
-dap.adapters.codelldb = {
-    type = "server",
-    port = "${port}",
-    executable = {
-        command = vim.fn.stdpath("data").."/mason/bin/codelldb",
-        args = {"--port", "${port}"},
-    },
+dap.adapters.gdb = {
+    type = "executable",
+    command = "gdb",
+    args = { "--interpreter=dap", "--eval-command", "set print pretty on" },
 }
 
-local function dap_get_args()
-    local userin = vim.fn.input("Arguments>").." "
+function dap_get_arguments()
+    local userin = vim.fn.input("Arguments> ")
+    local result = {}
     if #userin == 0 then return {} end
 
-    local words = {}
-
-    local inQuotes = false
-    local word = ""
     local prev = ""
+    local word = ""
+    local in_quotes = false
     for i = 1, #userin, 1 do
-        local char = userin:sub(i, i)
+        local curr = string.sub(userin, i, i)
 
-        if char == " " and (inQuotes or prev == "\\") then
-            word = word..char
-
-        elseif char == " " and (not inQuotes or prev ~= "\\") then
-            if #word ~= 0 then table.insert(words, #words + 1, word) end
-            word = ""
-
-        elseif char == "\\" then
+        if (curr == " ") and (not in_quotes) then
+            result[#result + 1] = word
+            word = ""; prev = ""
             goto continue
-
-        elseif char == "\"" and not inQuotes then
-            inQuotes = true
-
-        elseif char == "\"" and inQuotes then
-            if #word ~= 0 then table.insert(words, #words + 1, word) end
-            word = ""
-            inQuotes = false
-
-        else
-            word = word..char
-
         end
 
+        if (curr == "\"") and (prev ~= "\\") then
+            in_quotes = not in_quotes
+        elseif (cur == "'") and (prev ~= "\\") then
+            in_quotes = not in_quotes
+        end
+
+        word = word..curr
+
         ::continue::
-        prev = char
+        if i == #userin then
+            result[#result + 1] = word
+            word = ""; prev = ""
+        else
+            prev = curr
+        end
     end
 
-    return words
+    return result
+end
+
+local function dap_get_program()
+    local slash_char = "/"
+    if (vim.fn.has("win32") ~= 0) or (vim.fn.has("win64") ~= 0) then
+        slash_char = "\\"
+    end
+    return vim.fn.input({
+        prompt = "Path to executable>",
+        default = vim.fn.getcwd()..slash_char,
+        completion = "file",
+    })
 end
 
 dap.configurations.c = {
     {
-        name = "Launch file",
-        type = "codelldb",
+        name = "Launch",
+        type = "gdb",
         request = "launch",
         program = function()
-            return vim.fn.input({
-                prompt = "Path to executable: ",
-                default = vim.fn.getcwd().."/",
-                completion = "file",
-            })
+            return dap_get_program()
         end,
         args = function()
-            local result = dap_get_args()
-            vim.print(result)
-            return result
+            return dap_get_arguments()
         end,
-        cwd = '${workspaceFolder}',
-        stopOnEntry = false,
+        cwd = "${workspaceFolder}",
+        stopAtBeginningOfMainSubprogram = false,
+    },
+    {
+        name = "Select and attach to process",
+        type = "gdb",
+        request = "attach",
+        program = function()
+            return dap_get_program()
+        end,
+        args = function()
+            return dap_get_arguments()
+        end,
+        pid = function()
+            local name = vim.fn.input("Executable name (filter): ")
+            return require("dap.utils").pick_process({ filter = name })
+        end,
+        cwd = "${wordspaceFolder}",
+    },
+    {
+        name = "Attach to gdbserver :1234",
+        type = "gdb",
+        request = "attach",
+        target = "localhost:1234",
+        program = function()
+            return dap_get_program()
+        end,
+        args = function()
+            return dap_get_arguments()
+        end,
+        cwd = "${workspaceFolder}",
     },
 }
 
