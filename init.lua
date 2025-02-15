@@ -38,6 +38,9 @@ vim.filetype.add({ extension = { comp = "glsl" } })
 vim.filetype.add({ extension = { fanfic = "fanfic" } })
 vim.filetype.add({ extension = { ff     = "fanfic" } })
 
+vim.filetype.add({ extension = { asm    = "fasm" } })
+vim.filetype.add({ extension = { fasm   = "fasm" } })
+
 ----------------------
 -- Telescope Config --
 ----------------------
@@ -545,10 +548,22 @@ vim.keymap.set("n", "<M-i>", "<cmd>IconPickerNormal<cr>", nore(true, true, "Open
 
 vim.keymap.set("n", "<M-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, nore(true, true, "Open Harpoon UI"))
 vim.keymap.set("n", "<leader>m", function() harpoon:list():add() end, nore(true, true, "Add current buffer to Harpoon list"))
-vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end, nore(true, true, "Open Harpoon buffer #0"))
-vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end, nore(true, true, "Open Harpoon buffer #1"))
-vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end, nore(true, true, "Open Harpoon buffer #2"))
-vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end, nore(true, true, "Open Harpoon buffer #3"))
+vim.keymap.set("n", "<C-h>", function()
+    harpoon:list():select(1)
+    vim.cmd(":norm! zz<cr>")
+end, nore(true, true, "Open Harpoon buffer #0"))
+vim.keymap.set("n", "<C-t>", function()
+    harpoon:list():select(2)
+    vim.cmd(":norm! zz<cr>")
+end, nore(true, true, "Open Harpoon buffer #1"))
+vim.keymap.set("n", "<C-n>", function()
+    harpoon:list():select(3)
+    vim.cmd(":norm! zz<cr>")
+end, nore(true, true, "Open Harpoon buffer #2"))
+vim.keymap.set("n", "<C-s>", function()
+    harpoon:list():select(4)
+    vim.cmd(":norm! zz<cr>")
+end, nore(true, true, "Open Harpoon buffer #3"))
 
 vim.keymap.set("n", "<leader>go", dapui.toggle, { desc = "Toggle Debugger UI" })
 vim.keymap.set("n", "<leader>gl", dap.run_last, { desc = "Run previous Debugger" })

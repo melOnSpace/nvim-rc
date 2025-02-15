@@ -37,35 +37,27 @@ local plugins = {
         priority = 1000,
         config = function()
             require("dracula").setup({
-                colors = {
-                    -- bg        = "#282A36", fg      = "#F8F8F2",
-                    -- selection = "#44475A", 
-                    -- menu      = "#21222C", visual  = "#3E4452",
-                    -- gutter_fg = "#4B5263", nontext = "#3B4048",
-                    --
-                    -- black   = "#191A21", bright_black   = "#808080",
-                    -- red     = "#ff5555", bright_red     = "#fe8d8c",
-                    -- green   = "#50fa7b", bright_green   = "#50fa7b",
-                    -- yellow  = "#e6fd25", bright_yellow  = "#FFFFA5",
-                    -- blue    = "#5f5fff", bright_blue    = "#e5e5ff",
-                    -- magenta = "#cc00ff", bright_magenta = "#fe78ff",
-                    -- cyan    = "#00d2ff", bright_cyan    = "#37ffff",
-                    -- white   = "#d0d0d0", bright_white   = "#FFFFFF",
-                    --
-                    -- purple  = "#BD93F9", orange = "#FFB86C",
-                    -- pink    = "#FF79C6", violet = "#fc00ff",
-                },
+                colors = { bg = "#151515" },
+                italic_comment = false,
                 show_end_of_buffer = true,
                 transparent_bg = true,
                 overrides = {
-                    NormalFloat     = { bg = nil },
-                    TelescopeNormal = { bg = nil },
-                    SpecialKey      = { bg = nil, fg = "#ff92df" },
-                    Comment         = { bg = nil, fg = "#8590c2" },
+                    Type = { fg="White" },
+                    ColorColumn = { bg="#202020" },
                 },
             })
-
-            vim.cmd("colorscheme dracula")
+            vim.cmd("colorscheme dracula-soft")
+        end,
+    },
+    {
+        "rose-pine/neovim",
+        name = "rose-pine",
+        config = function()
+            require("rose-pine").setup({
+                enable = { terminal = true },
+                styles = { bold = true, italic = false, transparency = false },
+                disable_background = true,
+            })
         end,
     },
     {
@@ -103,12 +95,6 @@ local plugins = {
         }
     },
     {
-        "mbbill/undotree",
-        config = function()
-            vim.keymap.set("n", "U", vim.cmd.UndotreeToggle, { noremap = true, desc = "Toggle UndoTree" })
-        end,
-    },
-    {
         "norcalli/nvim-colorizer.lua",
         config = function()
             require("colorizer").setup({
@@ -141,23 +127,12 @@ local plugins = {
             require("hex").setup({})
         end,
     },
-    -- {
-    --     "williamboman/mason.nvim",
-    --     config = function()
-    --         require("mason").setup({ ui = { border = "single" }, })
-    --     end,
-    -- },
-    -- "neovim/nvim-lspconfig",
-    "hrsh7th/nvim-cmp",
-    -- "L3MON4D3/LuaSnip",
 
-    -- "saadparwaiz1/cmp_luasnip",
+    "hrsh7th/nvim-cmp",
     "ray-x/cmp-treesitter",
     "hrsh7th/cmp-nvim-lsp",
     "f3fora/cmp-spell",
-
     "Eandrju/cellular-automaton.nvim",
-    -- "folke/neodev.nvim",
     "akinsho/toggleterm.nvim",
     "mfussenegger/nvim-dap",
 }
@@ -230,7 +205,7 @@ local opts = {
             --     "netrwPlugin",
             --     "tarPlugin",
             --     "tohtml",
-                "tutor",
+            --     "tutor",
             --     "zipPlugin",
             },
         },

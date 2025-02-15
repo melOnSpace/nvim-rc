@@ -18,7 +18,7 @@ FileTypeSymbols = {
 function StatusLine_FileSymbol()
     local sym = FileTypeSymbols[vim.bo.filetype]-- or 
     if sym ~= nil then return sym
-    else return "" end
+    else return " "..vim.o.filetype end
 end
 
 function StatusLine_FileName()
@@ -32,10 +32,8 @@ function StatusLine_FileName()
     local _, oil = string.find(fullpath, "oil://", 1, true)
     if oil ~= nil then return string.sub(fullpath, oil + 1, #fullpath) end
 
-    local result = ""
-    if cwd_end ~= nil then result = string.sub(fullpath, cwd_end + 1, #fullpath)
-    else result = fullpath end
-    return result.."["..vim.o.filetype.."]"
+    if cwd_end ~= nil then return string.sub(fullpath, cwd_end + 1, #fullpath)
+    else return fullpath end
 end
 
 function StatusLine_FileSize()
