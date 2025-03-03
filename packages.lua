@@ -128,6 +128,7 @@ local plugins = {
         end,
     },
 
+    "RRethy/nvim-align",
     "hrsh7th/nvim-cmp",
     "ray-x/cmp-treesitter",
     "hrsh7th/cmp-nvim-lsp",

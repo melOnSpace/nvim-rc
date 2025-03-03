@@ -39,18 +39,18 @@ vim.keymap.set("n", "<M-[>", "<C-w>-", { desc = "Grow current window downwards" 
 vim.keymap.set("n", "<M-=>", "<C-w>=", { desc = "Make all windows equal size" })
 
 vim.keymap.set("n", "<leader>w", function()
-    vim.cmd([[:set invlist]])
+    vim.cmd([[:setlocal invlist]])
     if vim.o.list then P("View Whitespace Enabled")
     else P("View Whitespace Disabled") end
 end, { desc = "Toggle visible whitespace characters" })
 
 vim.keymap.set("n", "<leader>s", function()
-    vim.cmd([[:set invspell]])
+    vim.cmd([[:setlocal invspell]])
     if vim.o.spell then P("Spelling Enabled for language \""..((vim.o.spelllang or "nil").."\""))
     else P("Spelling Disabled") end
 end, { desc = "Toggle spelling" })
 vim.keymap.set("i", "<C-s>", function()
-    vim.cmd([[:set invspell]])
+    vim.cmd([[:setlocal invspell]])
     if vim.o.spell then P("Spelling Enabled for language \""..((vim.o.spelllang or "nil").."\""))
     else P("Spelling Disabled") end
 end, { desc = "Toggle spelling" })
@@ -60,5 +60,3 @@ vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Goto previous diag
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
 vim.keymap.set("n", "<C-k>", ":norm [dzz<cr>", { desc = "Goto previous diagnostic and center" })
 vim.keymap.set("n", "<C-j>", ":norm ]dzz<cr>", { desc = "Goto next diagnostic and center" })
-
-
