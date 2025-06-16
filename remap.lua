@@ -1,12 +1,11 @@
 vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
 
 vim.keymap.set("t", "<ESC>", "<cmd>stopinsert<cr>", { noremap=true, silent=true, desc="Exit insert mode while in a terminal" })
 vim.keymap.set("i", "<Tab>", "<Tab>", { desc = "Set <Tab> to itself (by default it is an alias for <C-i>" })
 vim.keymap.set("n", "<M-;>", "q:", { noremap = true, desc = "Opens command mode in a buffer" })
 vim.keymap.set("n", "{", ":keepj norm! {<cr>", { noremap=true, silent = true, desc = "Goto end of paragraph but keep jumps" })
 vim.keymap.set("n", "}", ":keepj norm! }<cr>", { noremap=true, silent = true, desc = "goto start of paragraph but keep jumps" })
-
--- vim.keymap.set("x", ":", ":<C-f>as/", { noremap=true, silent=true, desc="better :s" })
 
 vim.keymap.set("v", "J", ":m '>+1<cr>gv=gv", { desc = "Moves the line down one in visual mode" })
 vim.keymap.set("v", "K", ":m '<-2<cr>gv=gv", { desc = "Moves the line up one in visual mode" })
@@ -16,6 +15,8 @@ vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Move cursor down 50% and cente
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Move cursor up 50% and center buffer on cursor" })
 vim.keymap.set("n", "n", "nzzzv", { desc = "Goto next highlight and center buffer on cursor" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Goto previous highlight and center buffer on cursor" })
+
+vim.keymap.set("n", "<C-f>", ":find ", { desc = "Shortcut for :find, and amazing cmd in vim" })
 
 vim.keymap.set({"n", "v"}, "<M-y>", [["+y]], { desc = "Yank to system clipboard" })
 vim.keymap.set({"n", "v"}, "<M-Y>", [["+Y]], { desc = "Yank up to whitespace to system clipboard" })
@@ -55,8 +56,3 @@ vim.keymap.set("i", "<C-s>", function()
     else P("Spelling Disabled") end
 end, { desc = "Toggle spelling" })
 
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open diagnostic in float" })
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Goto previous diagnostic" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
-vim.keymap.set("n", "<C-k>", ":norm [dzz<cr>", { desc = "Goto previous diagnostic and center" })
-vim.keymap.set("n", "<C-j>", ":norm ]dzz<cr>", { desc = "Goto next diagnostic and center" })

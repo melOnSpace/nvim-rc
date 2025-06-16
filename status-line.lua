@@ -1,123 +1,82 @@
-vim.api.nvim_set_hl(0, "StatusFile", { fg="Cyan", bg="#004b4b" })
+local function file_part()
+    local highlight_group = ""-- "%#Status#"
+    local filetype = "["..vim.bo.filetype.."] "
+    local path = vim.fn.expand("%:p")
+    local modifiers = "%m%r%h%w"
 
-vim.api.nvim_set_hl(0, "DiagnosticSignError", { fg="Red", bg="none", bold=true, ctermbg=0 })
-vim.fn.sign_define("DiagnosticSignError", { text="", texthl="DiagnosticSignError", linehl="", numhl="DiagnosticSignError" })
-vim.api.nvim_set_hl(0, "DiagnosticSignWarn", { fg="Yellow", bg="none", bold=true, ctermbg=0 })
-vim.fn.sign_define("DiagnosticSignWarn", { text="", texthl="DiagnosticSignWarn", linehl="", numhl="DiagnosticSignWarn" })
-vim.api.nvim_set_hl(0, "DiagnosticSignHint", { fg="Cyan", bg="none", bold=true, ctermbg=0 })
-vim.fn.sign_define("DiagnosticSignHint", { text="", texthl="DiagnosticSignHint", linehl="", numhl="DiagnosticSignHint" })
-vim.api.nvim_set_hl(0, "DiagnosticSignInfo", { fg="#5a7dff", bg="none", bold=true, ctermbg=0 })
-vim.fn.sign_define("DiagnosticSignInfo", { text="ℹ", texthl="DiagnosticSignInfo", linehl="", numhl="DiagnosticSignInfo" })
-
-FileTypeSymbols = {
-    ["oil"] = "",
-    ["toggleterm"] = "",
-    ["gitcommit"] = "󰊢",
-}
-
-function StatusLine_FileSymbol()
-    local sym = FileTypeSymbols[vim.bo.filetype]-- or 
-    if sym ~= nil then return sym
-    else return " "..vim.o.filetype end
-end
-
-function StatusLine_FileName()
-    local fullpath = vim.fn.expand("%:p")
     local cwd = vim.fn.getcwd().."/"
-    local _, cwd_end = string.find(fullpath, cwd, 1, true)
+    local home = vim.fn.expand("~").."/"
+    local term = "term://"
+    local oil = "oil://"
 
-    local _, term = string.find(fullpath, "term:/", 1, true)
-    if term ~= nil then return "terminal: "..vim.o.shell end
+    if path:sub(1, term:len()) == term then
+        local pid_and_shell = string.find(path, "%d+:/[^%s]")
+        path = path:sub(pid_and_shell, path:len())
+        filetype = "[term] "
+    elseif path:sub(1, oil:len()) == oil then
+        path = path:sub(oil:len() + 1, path:len())
+    end
 
-    local _, oil = string.find(fullpath, "oil://", 1, true)
-    if oil ~= nil then return string.sub(fullpath, oil + 1, #fullpath) end
+    if path:sub(1, cwd:len()) == cwd then
+        path = "./"..path:sub(cwd:len() + 1, path:len())
+    elseif path:sub(1, home:len()) == home then
+        path = "~/"..path:sub(home:len() + 1, path:len())
+    end
 
-    if cwd_end ~= nil then return string.sub(fullpath, cwd_end + 1, #fullpath)
-    else return fullpath end
+    return filetype..highlight_group..path..modifiers
 end
 
-function StatusLine_FileSize()
-    local size = vim.fn.getfsize(vim.fn.expand("%:p"))
-    if size == -1 then return "󱛟 0B" end
-
-    local prefix = "B"
-    if size > 1024 then
-        size = size / 1024
-        prefix = "kiB"
-    end
-    if size > 1024 then
-        size = size / 1024
-        prefix = "MiB"
-    end
-    if size > 1024 then
-        size = size / 1024
-        prefix = "GiB"
-    end
-    if size > 1024 then
-        size = size / 1024
-        prefix = "TiB"
-    end
-    if size > 1024 then
-        size = size / 1024
-        prefix = "PiB"
-    end
-
-    local result = tostring(size)..prefix
-    if prefix ~= "B" then result = string.format("%.3f", size)..prefix end
-    return "󱛟 "..result
+local function position_part()
+    return "%p%%    %l:%c"
 end
 
-function StatusLine_Diagnostic()
-    local diagnostics = vim.diagnostic.get(0)
-    if #diagnostics == 0 then return "" end
-
-    --                   e  w  h  i
-    local severities = { 0, 0, 0, 0 }
-    for _, dia in ipairs(diagnostics) do
-        severities[dia.severity] = severities[dia.severity] + 1
-    end
-
-    local statW = "%#StatusDiaWarn#"..(vim.fn.sign_getdefined("DiagnosticSignWarn")[1].text or "W")..tostring(severities[2]).." "
-    local statE = "%#StatusDiaError#"..(vim.fn.sign_getdefined("DiagnosticSignError")[1].text or "E")..tostring(severities[1]).." "
-    local statH = "%#StatusDiaHint#"..(vim.fn.sign_getdefined("DiagnosticSignHint")[1].text or "H")..tostring(severities[3]).." "
-    local statI = "%#StatusDiaInfo#"..(vim.fn.sign_getdefined("DiagnosticSignInfo")[1].text or "I")..tostring(severities[4]).." "
-
-    local result = ""
-    if severities[1] > 0 then result = result..statE end
-    if severities[2] > 0 then result = result..statW end
-    if severities[3] > 0 then result = result..statH end
-    if severities[4] > 0 then result = result..statI end
-
-    return result.."%#StatusFile#"
+local function vim_part()
+    local modes = {
+        ["n"]   = { color="Status", text="normal" },
+        ["no"]  = { color="Status", text="normal op-pending" },
+        ["nov"] = { color="Status", text="normal op-pending" },
+        ["noV"] = { color="Status", text="normal op-pending" },
+        ["no"]= { color="Status", text="normal op-pending" },
+        ["niI"] = { color="Status", text="normal using |insert|" },
+        ["niR"] = { color="Status", text="normal using |replace|" },
+        ["niV"] = { color="Status", text="normal using |virtual-replace|" },
+        ["nt"]  = { color="Status", text="normal in terminal" },
+        ["ntT"] = { color="Status", text="normal using |terminal|" },
+        ["v"]   = { color="Directory", text="visual" },
+        ["vs"]  = { color="Directory", text="visual using |select|" },
+        ["V"]   = { color="Directory", text="visual-line" },
+        ["Vs"]  = { color="Directory", text="visual-line using |select|" },
+        [""]  = { color="Directory", text="visual-block" },
+        ["s"] = { color="Directory", text="visual-block using |select|" },
+        ["s"]   = { color="Statement", text="select" },
+        ["S"]   = { color="Statement", text="select-line" },
+        [""]  = { color="Statement", text="select-block" },
+        ["i"]   = { color="CursorLineNr", text="insert" },
+        ["ic"]  = { color="CursorLineNr", text="insert-completion [generic]" },
+        ["ix"]  = { color="CursorLineNr", text="insert-completion [ctrl-X]" },
+        ["R"]   = { color="Keyword", text="replace" },
+        ["Rc"]  = { color="Keyword", text="replace-completion [generic]" },
+        ["Rx"]  = { color="Keyword", text="replace-completion [ctrl-X]" },
+        ["Rv"]  = { color="Keyword", text="virtual-replace" },
+        ["Rvc"] = { color="Keyword", text="virtual-replace-completion [generic]" },
+        ["Rvx"] = { color="Keyword", text="virtual-replace-completion [ctrl-X]" },
+        ["c"]   = { color="ModeMsg", text="command" },
+        ["cr"]  = { color="ModeMsg", text="command-overstrike" },
+        ["cv"]  = { color="ModeMsg", text="vim-Ex [gQ]" },
+        ["cvr"] = { color="ModeMsg", text="vim-Ex-overstrike [gQ]" },
+        ["r"]   = { color="Comment", text="hit-enter" },
+        ["rm"]  = { color="Comment", text="-- more --" },
+        ["r?"]  = { color="Comment", text="|:confirm| query" },
+        ["!"]   = { color="Comment", text="shell is executing" },
+        ["t"]   = { color="CursorLineNr", text="terminal" },
+    }
+    local found = modes[vim.fn.mode()] or { color="DiagnosticError", text="unknown-mode '"..tostring(vim.fn.mode():byte()).."'" }
+    local lang = vim.bo.spelllang
+    return lang.."    ".."%#"..found.color.."#*"..found.text.."*"
 end
 
-function StatusLine_Spell()
-    if vim.o.spell then return vim.o.spelllang
-    else return "" end
+function Final_Status_Line()
+    return file_part().."   "..position_part().."%="..vim_part()
 end
 
-function StatusLine_Lsp()
-    local current = vim.api.nvim_get_current_buf()
-    local servers = vim.lsp.get_clients({ bufnr=current })
-
-    if #servers == 0 then return "" end
-    if #servers == 1 then return " "..servers[1].name end
-
-    local result = " {"
-    for i = 1, #servers, 1 do
-        local tail = ","
-        if i == #servers then tail = "" end
-        result = result..servers[i].name..tail
-    end
-    return result.."}"
-end
-
-vim.api.nvim_set_hl(0, "StatusDiaError", { fg="Red",     bg="#004b4b" })
-vim.api.nvim_set_hl(0, "StatusDiaWarn",  { fg="Yellow",  bg="#004b4b" })
-vim.api.nvim_set_hl(0, "StatusDiaHint",  { fg="Cyan",    bg="#004b4b" })
-vim.api.nvim_set_hl(0, "StatusDiaInfo",  { fg="#5a7dff", bg="#004b4b" })
-
-local cursor_line = vim.api.nvim_get_hl(0, { name="CursorLine" })
-vim.api.nvim_set_hl(0, "CursorColumn", { fg=nil, bg=cursor_line.bg })
-
-vim.opt.statusline = "%#StatusFile# %{luaeval('StatusLine_FileSymbol()')} %{luaeval('StatusLine_FileName()')}%m%h%r      b%n %c:%p%%%=%{%luaeval('StatusLine_Diagnostic()')%}    %{luaeval('StatusLine_Spell()')}    %{luaeval('StatusLine_Lsp()')}    %{luaeval('StatusLine_FileSize()')} "
+vim.opt.statusline = "%{%luaeval('Final_Status_Line()')%}"
