@@ -39,6 +39,7 @@ vim.cmd('highlight Special guifg=#a0eeee')
 
 -- Refined syntax highlighting
 vim.cmd('highlight String guifg=#ffa0a0')
+-- vim.cmd('highlight String guifg=#60cc60')
 vim.cmd('highlight Number guifg=#ffffff')
 vim.cmd('highlight Boolean guifg=#ffa0a0')
 vim.cmd('highlight Function guifg=#ffffff')
