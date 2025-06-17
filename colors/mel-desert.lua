@@ -7,6 +7,7 @@ vim.cmd('syntax reset')
 
 -- Basic UI elements
 vim.cmd('highlight Normal guibg=#181818 guifg=#ffffff')
+vim.cmd('highlight NormalFloat guibg=none guifg=#ffffff')
 vim.cmd('highlight NonText guibg=#181818 guifg=#181818')
 vim.cmd('highlight CursorLine guibg=#2f2f2f')
 vim.cmd('highlight LineNr guifg=#585858')
@@ -30,6 +31,7 @@ vim.cmd('highlight Title guifg=#ffffff')
 
 -- Syntax highlighting
 vim.cmd('highlight Comment guifg=#8c8c8c')
+-- vim.cmd('highlight Comment guifg=#6dceeb')
 vim.cmd('highlight Constant guifg=#ffa0a0')
 vim.cmd('highlight Identifier guifg=#ffffff')
 vim.cmd('highlight Statement guifg=#f0e68c guibg=NONE gui=bold cterm=bold')

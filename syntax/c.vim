@@ -4,7 +4,7 @@
 " Latest Revision: 16 Jun 2025
 
 if exists("b:current_syntax")
-    "finish
+    finish
 endif
 
 syn keyword Constant nullptr true false NULL
@@ -75,7 +75,7 @@ syn match preProcString display contained "<[^>]*>"
 syn match preProcInclude display "^\s*\zs\%(%:\|#\)\s*include\>\s*["<]" contains=preProcString
 
 hi link preProcString  String
-hi link preProcInclude Macro
+hi link preProcInclude PreProc
 
 let b:current_syntax = "c"
 
