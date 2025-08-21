@@ -134,7 +134,11 @@ local function toggle_term_buffer()
         end
         vim.cmd.startinsert()
     else
-        vim.api.nvim_set_current_buf(state.og_bufnr)
+        if vim.api.nvim_buf_is_valid(state.og_bufnr) then
+            vim.api.nvim_set_current_buf(state.og_bufnr)
+        else
+            vim.print("could not find original buffer")
+        end
     end
 end
 

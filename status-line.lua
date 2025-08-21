@@ -9,12 +9,14 @@ local function file_part()
     local term = "term://"
     local oil = "oil://"
 
-    if path:sub(1, term:len()) == term then
-        local pid_and_shell = string.find(path, "%d+:/[^%s]")
-        path = path:sub(pid_and_shell, path:len())
-        filetype = "[term] "
-    elseif path:sub(1, oil:len()) == oil then
-        path = path:sub(oil:len() + 1, path:len())
+    if vim.fn.has("win32") ~= 1 then
+        if path:sub(1, term:len()) == term then
+            local pid_and_shell = string.find(path, "%d+:/[^%s]")
+            path = path:sub(pid_and_shell, path:len())
+            filetype = "[term] "
+        elseif path:sub(1, oil:len()) == oil then
+            path = path:sub(oil:len() + 1, path:len())
+        end
     end
 
     if path:sub(1, cwd:len()) == cwd then
