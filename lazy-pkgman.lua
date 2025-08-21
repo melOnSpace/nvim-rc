@@ -19,7 +19,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     spec = { { import = "lazy-plugs" }, --[[ import your plugins ]] },
     install = { colorscheme = { "mel-desert" } },
-    checker = { enabled = true }, -- automatically check for plugin updates
+    checker = { enabled = false }, -- automatically check for plugin updates
     ui = { border = "single" },
     pills = true, ---@type boolean
     performance = {

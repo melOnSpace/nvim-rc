@@ -1,11 +1,19 @@
+local last_dir = nil
+
 local function get_dir_from_user(prompt)
     prompt = prompt or "Input to search: "
     local userin = vim.fn.input({
         prompt = prompt,
+        default = last_dir,
         cancelreturn = vim.fn.getcwd(),
         completion = "dir",
     })
-    return vim.fn.expand(userin)
+    if userin:len() == 0 then
+        userin = last_dir or "~"
+    end
+    local result = vim.fn.expand(userin)
+    last_dir = result
+    return result
 end
 
 return {
@@ -182,6 +190,9 @@ return {
                 return vim.fn.expand("%:p:h")
             end
 
+            vim.keymap.set("n", "<leader>m", builtin.man_pages,
+                {silent=true,noremap=true,desc="Search man pages"})
+
             vim.keymap.set("n", "<leader>pf", builtin.find_files,
                 {silent=true,noremap=true,desc="Find file in CWD"})
             vim.keymap.set("n", "<leader>ps", builtin.live_grep,
@@ -226,18 +237,6 @@ return {
                 builtin.help_tags()
                 vim.cmd.norm("i"..word)
             end, {silent=true,noremap=true,desc="Find word up unitl whitespace under cursor in help tags"})
-            -- vim.keymap.set("x", "<leader>h", function()
-            --     local start = vim.fn.getpos("v")
-            --     local endof = vim.fn.getpos(".")
-            --     assert(start[1] == endof[1], "buffers for get text were somehow not equal???")
-            --     assert(start[4] == 0 and endof[4] == 0, "unimplemented for virtualedit")
-            --     local line_pos = vim.fn.min({ start[2] - 1, endof[2] - 1 })
-            --     local col_pos =  vim.fn.sort({ start[3], endof[3] })
-            --     local result = vim.api.nvim_buf_get_text(start[1], line_pos, col_pos[1] - 1, line_pos, col_pos[2], {})[1]
-            --     assert(result:len() > 0)
-            --     builtin.help_tags()
-            --     P(":norm! i"..result.."<cr>")
-            -- end, {silent=true,noremap=true,desc="Find visual selection (but only up until first line) in help tags"})
         end,
     }
 }

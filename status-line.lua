@@ -71,8 +71,13 @@ local function vim_part()
         ["t"]   = { color="CursorLineNr", text="terminal" },
     }
     local found = modes[vim.fn.mode()] or { color="DiagnosticError", text="unknown-mode '"..tostring(vim.fn.mode():byte()).."'" }
+
     local lang = vim.bo.spelllang
-    return lang.."    ".."%#"..found.color.."#*"..found.text.."*"
+    local result = "%#"..found.color.."#*"..found.text.."*"
+    if vim.o.spell then
+        result = lang.."    "..result
+    end
+    return result
 end
 
 function Final_Status_Line()

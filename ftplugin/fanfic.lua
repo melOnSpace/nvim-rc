@@ -10,6 +10,15 @@ vim.bo.spelllang = "en_us"
 vim.bo.textwidth = 120
 vim.o.cc = "120"
 
+function SetTextWidth(size)
+    if type(size) ~= "number" then
+        size = vim.api.nvim_win_get_width(0)
+        size = vim.fn.floor(size*0.80)
+    end
+    vim.bo.textwidth = size
+    vim.o.cc = tostring(size)
+end
+
 local newline = ""
 if not vim.fn.has("win32") then newline = "\n"
 else newline = "\r\n" end

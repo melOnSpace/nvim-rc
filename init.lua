@@ -2,14 +2,21 @@ function P(thing)
     vim.print(thing)
 end
 
----@diagnostic disable-next-line: param-type-mismatch
 package.path = package.path .. ";"..vim.fn.stdpath("config").."/?.lua"
 require("set")
 require("remap")
 require("status-line")
 require("lazy-pkgman")
+require("terminal")
 
 vim.cmd(":colorscheme mel-desert")
 
 vim.g.netrw_banner = false
+vim.g.asmsyntax = "fasm"
+vim.filetype.add({
+    extension = {
+        fanfic = "fanfic",
+        ff     = "fanfic",
+    },
+})
 
