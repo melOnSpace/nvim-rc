@@ -38,7 +38,6 @@ local function toggle_term_buffer()
     end
 end
 
-
 vim.keymap.set({ "n", "t" }, "<C-\\>", toggle_term_buffer)
 vim.keymap.set("t", "<C-r>", function()
     assert(vim.api.nvim_buf_is_valid(0))

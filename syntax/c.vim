@@ -41,12 +41,13 @@ syn keyword Type __based __cdecl __declspec
 syn keyword Type __fastcall __stdcall __w64
 syn keyword Type __unaligned __vectorcall
 
-syn match Special '^\s*\w\+:\s*$'
-
 syn keyword Statement switch case default
 syn keyword Statement if else
 syn keyword Statement for do while break continue
 syn keyword Statement goto return
+
+" labels
+" syn match Special '^\s*\w\+:\s*$'
 
 syn keyword Keyword sizeof typedef typeof typeof_unqual
 syn keyword Keyword _Alignas alignas 
@@ -59,7 +60,7 @@ syn region Comment start=+\/\*+ end=+\*\/+ contains=@Spell
 syn region String    start=+\%(u8\|u\|U\|L\)\="+ skip=+\\\\\|\\"+ end=+"+
 syn region Character start=+\%(u8\|u\|U\|L\)\='+ skip=+\\\\\|\\'+ end=+'+
 
-syn region Macro start=+#+ end=+\S\s+
+syn region Macro start=+#+ end='\a\+\s*'
 "syn match Macro '^\s*#\s*define'
 "syn match Macro '^\s*#\s*undef'
 "syn match Macro '^\s*#\s*if'
